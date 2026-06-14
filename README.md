@@ -54,7 +54,7 @@ env NUGET_PACKAGES="$HOME/.nuget/packages" dotnet build
 env NUGET_PACKAGES="$HOME/.nuget/packages" dotnet run
 ```
 
-実行すると、カレントディレクトリに `sample_300dpi.pdf` が生成されます。
+実行すると、カレントディレクトリに `sample_300dpi.pdf` が生成されます。　尚、後述の通り、PDFファイルの中身は設定ファイルで指定された数字が描画された画像が埋め込まれたものとなります。
 
 ## 設定ファイル
 
