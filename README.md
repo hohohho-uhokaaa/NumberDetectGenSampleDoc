@@ -37,25 +37,21 @@ NumberDetectGenSampleDoc/
 
 ## ビルド方法
 
-### 環境変数の設定（Linux の場合）
-
-NuGet パッケージのキャッシュディレクトリを設定します：
+環境（bash / cshなど）を問わず、以下のコマンドで環境変数を一時的に適用してビルドを実行します。
 
 ```bash
-export NUGET_PACKAGES="$HOME/.nuget/packages"
+env NUGET_PACKAGES="$HOME/.nuget/packages" dotnet build
 ```
 
-### ビルド
-
-```bash
-export NUGET_PACKAGES="$HOME/.nuget/packages"
-dotnet build
-```
+> **💡 Devinを運用する際のヒント**  
+> Devinは dotnet コマンドを試行する際、自身のシェル環境（csh等）に合わせて export や setenv を使い分けて自動復旧を試みます。エラーにめげることなく果敢にあらゆる手段を駆使して最後までがんばるDevinを、暖かく見守ってあげてください。
 
 ## 実行方法
 
+環境変数を指定して、以下のコマンドで実行します。
+
 ```bash
-NUGET_PACKAGES="$HOME/.nuget/packages" dotnet run
+env NUGET_PACKAGES="$HOME/.nuget/packages" dotnet run
 ```
 
 実行すると、カレントディレクトリに `sample_300dpi.pdf` が生成されます。
@@ -148,7 +144,7 @@ NUGET_PACKAGES="$HOME/.nuget/packages" dotnet run
 Linux（Fedora等）環境でのビルド・復元時、NuGetがシステムルートに近い `/home/packages` などのディレクトリにキャッシュを書き込もうとし、`Access to the path '/home/packages' is denied / Permission denied` エラーで `dotnet restore` が物理的に失敗する場合があります。
 
 **【対策】**
-ビルドや実行の前には、必ず実行ユーザーのホームディレクトリ配下を指すように環境変数 `NUGET_PACKAGES` を明示的に指定、または `export` してください。
+ビルドや実行の前には、必ず実行ユーザーのホームディレクトリ配下を指すように環境変数 `NUGET_PACKAGES` を明示的に指定、または `export`（csh環境では `setenv`）してください。
 
 ```bash
 export NUGET_PACKAGES="$HOME/.nuget/packages"
@@ -156,32 +152,43 @@ export NUGET_PACKAGES="$HOME/.nuget/packages"
 
 ### 2. QuestPDF (v2024.12.0) の Canvas API 廃止にともなう実行時例外
 
-> **この情報は、QuestPDF v2024.12.0 以降で同様の問題に直面している開発者のために共有されています。**
+> **💡 共有知見**  
+> この情報は、QuestPDF v2024.12.0 以降で同様の問題に直面している開発者のためにコミュニティへ共有されています。
 
 **【現象】**
 QuestPDF v2024.12.0 以降において、ドキュメント内で直接 SkiaSharp の生キャンバスを操作する `.Canvas()` APIを呼び出すと、ビルドは通るものの、実行時に強制的にクラッシュ（`Deprecated` 例外）を発生させる仕様に変更されました。また、代替とされる内部インターフェースもバージョンアップにより名称や名前空間が変更されるリスクがあります。
 
-**【対策（本プロジェクトの設計アプローチ）】**
-QuestPDF 内部での高度なグラフィックス描画を完全に排除し、**「Skia-First 方式（事前レンダリング）」** を採用しました。
-
-1. 最初に SkiaSharp 独立で `SKBitmap` (2480 x 3508) を生成し、CSVの座標・回転角に基づいて数字を描画
-2. レンダリング完了後の画像をバイト配列（またはストリーム）に変換
-3. QuestPDF 側には `.Image(imageBytes)` を使用してその画像を1枚絵として埋め込む
-
-このアプローチにより、QuestPDF のバージョンアップに左右されない高い堅牢性と、実行時例外の完全な回避を両立しています。
+**【対策】**
+QuestPDF 内部での高度なグラフィックス描画を完全に排除し、「Skia-First 方式（事前レンダリング）」を採用して画像を1枚絵として埋め込むことで、QuestPDFのバージョンに依存しない堅牢性を確保しました。
 
 ### 3. Linux環境における日本語・標準フォントの不足と文字化け防止
 
 **【現象】**
-Linux（Fedora等）環境では、Windows標準のフォント（ArialやMSゴシックなど）がデフォルトでインストールされていないため、SkiaSharpでの描画時に意図しないフォールバックフォントが適用され、文字サイズや位置がズレたり、2ページ目の日本語説明文が文字化け（トーフ化）する可能性があります。
+Linux（Fedora等）環境では、Windows標準のフォントがデフォルトでインストールされていないため、SkiaSharpでの描画時に意図しないフォールバックフォントが適用されて文字位置がズレたり、QuestPDFで直接出力する2ページ目の日本語説明文が文字化け（トーフ化、???? 化）する可能性があります。
 
 **【対策】**
-Linux環境で実行する場合は、あらかじめシステムに適切なフォントをインストールするか、プロジェクト内にフォントファイルを同梱して `Configuration.cs` の `FontPaths` から読み込ませてください。
+Linux環境で実行する場合は、あらかじめシステムに適切な日本語フォントをインストールするか、プロジェクト内にフォントファイルを同梱して `Configuration.cs` の `FontPaths` から読み込ませてください。
 
 Fedoraで標準的なオープンソースフォント（Google Noto Fonts等）を導入する場合のコマンド例：
 
 ```bash
 sudo dnf install google-noto-sans-fonts google-noto-sans-cjk-fonts
+```
+
+### 4. 本質的な自動化へ向けた次のフェーズ（Devinへの指示例）
+
+本プロジェクトで生成したテスト用PDFの精度検証が完了した後、実際の「複数ページに一括スキャンされたPDFから、所定位置の数字を読み取って自動リネーム・分割する本番用パイプライン」の構築をDevinへ指示する際のプロンプトの例です。
+
+```
+We are going to build a production tool to automate a miserable paperwork task.
+The goal is:
+1. Split a multi-page scanned PDF into individual 1-page PDFs.
+2. Convert each page into a 300 DPI image (using PDFium or similar).
+3. Crop a specific coordinates (ROI) where the target number is printed.
+4. Recognize the number using Emgu.CV (OpenCV) or Tesseract.
+5. Rename and save the 1-page PDF using the recognized number as the filename (e.g., 12345.pdf).
+
+Let's create a prototype for this pipeline. First, recommend the best C# libraries for PDF splitting and rendering on Linux (Fedora).
 ```
 
 ## ライセンス

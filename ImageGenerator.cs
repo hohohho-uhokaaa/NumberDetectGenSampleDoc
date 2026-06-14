@@ -161,7 +161,7 @@ namespace NumberDetectGenSampleDoc
                     // 2ページ目：説明ページ
                     page.Size(PageSizes.A4);
                     page.Margin(50);
-                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily(Fonts.Calibri));
+                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily("Noto Sans CJK JP"));
                     
                     page.Header().Element(header =>
                     {
