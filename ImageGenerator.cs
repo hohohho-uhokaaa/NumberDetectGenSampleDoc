@@ -1,133 +1,185 @@
 using System;
 using System.IO;
-using SkiaSharp;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace NumberDetectGenSampleDoc
 {
     /// <summary>
-    /// テスト画像を生成するクラス
+    /// テストPDFを生成するクラス
     /// </summary>
     public class ImageGenerator : IDisposable
     {
+        // 設定オブジェクト（画像サイズ、フォント設定など）
         private readonly Configuration _config;
-        private readonly FontProvider _fontProvider;
-        private readonly Random _random;
 
+        // フォントプロバイダー（フォントの検出とロードを担当）
+        private readonly FontProvider _fontProvider;
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="config">設定オブジェクト</param>
+        /// <param name="fontProvider">フォントプロバイダー</param>
         public ImageGenerator(Configuration config, FontProvider fontProvider)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _fontProvider = fontProvider ?? throw new ArgumentNullException(nameof(fontProvider));
-            _random = new Random();
+            
+            // QuestPDFのライセンスを設定（コミュニティライセンス）
+            QuestPDF.Settings.License = LicenseType.Community;
         }
 
         /// <summary>
-        /// テスト画像を生成して保存する
+        /// テストPDFを生成して保存する
         /// </summary>
         public void Generate()
         {
-            Console.WriteLine("Fedora環境でSkiaSharpを使用してテスト画像を生成しています...");
+            Console.WriteLine("Fedora環境でQuestPDFを使用してテストPDFを生成しています...");
 
-            using (var bitmap = new SKBitmap(_config.ImageWidth, _config.ImageHeight))
-            using (var canvas = new SKCanvas(bitmap))
-            {
-                DrawBackground(canvas);
-                DrawTextElements(canvas);
-                SaveImage(bitmap, _config.OutputFileName);
+            // 設定ファイルからテキスト描画設定を読み込み
+            Console.WriteLine($"設定ファイルを読み込み中: {_config.TextDrawingConfigFile}");
+            var textConfigs = TextDrawingConfigLoader.Load(_config.TextDrawingConfigFile);
+            Console.WriteLine($"設定ファイルから {textConfigs.Count} 件の描画設定を読み込みました。");
 
-                PrintCompletionMessage(_config.OutputFileName);
-            }
-        }
+            // PDFドキュメントを作成
+            Console.WriteLine($"PDFドキュメントを作成中: {_config.OutputFileName}");
+            var document = new TextDrawingDocument(_config, textConfigs);
+            document.GeneratePdf(_config.OutputFileName);
 
-        /// <summary>
-        /// 背景を描画する
-        /// </summary>
-        private void DrawBackground(SKCanvas canvas)
-        {
-            canvas.Clear(SKColors.White);
-        }
-
-        /// <summary>
-        /// テキスト要素を描画する
-        /// </summary>
-        private void DrawTextElements(SKCanvas canvas)
-        {
-            using (var typeface = _fontProvider.GetFont())
-            {
-                var (font, paint) = CreateDrawingObjects(typeface);
-                int count = Math.Min(_config.TestNumbers.Count, _config.TextPositions.Count);
-
-                for (int i = 0; i < count; i++)
-                {
-                    string text = _config.TestNumbers[i];
-                    SKPoint position = _config.TextPositions[i];
-                    float rotation = GenerateRandomRotation();
-
-                    DrawRotatedText(canvas, text, font, paint, position, rotation);
-                }
-            }
-        }
-
-        /// <summary>
-        /// ペイントオブジェクトを作成する
-        /// </summary>
-        private (SKFont font, SKPaint paint) CreateDrawingObjects(SKTypeface typeface)
-        {
-            var font = new SKFont(typeface, _config.FontSize);
-            var paint = new SKPaint
-            {
-                Color = _config.TextColor,
-                IsAntialias = true
-            };
-            return (font, paint);
-        }
-
-        /// <summary>
-        /// ランダムな回転角度を生成する
-        /// </summary>
-        private float GenerateRandomRotation()
-        {
-            return (float)(_random.NextDouble() * (_config.MaxRotationDegree - _config.MinRotationDegree) + _config.MinRotationDegree);
-        }
-
-        /// <summary>
-        /// 回転させたテキストを描画する
-        /// </summary>
-        private void DrawRotatedText(SKCanvas canvas, string text, SKFont font, SKPaint paint, SKPoint location, float degrees)
-        {
-            canvas.Save();
-            canvas.Translate(location.X, location.Y);
-            canvas.RotateDegrees(degrees);
-            canvas.DrawText(text, 0, 0, SKTextAlign.Left, font, paint);
-            canvas.Restore();
-        }
-
-        /// <summary>
-        /// 画像を保存する
-        /// </summary>
-        private void SaveImage(SKBitmap bitmap, string outputPath)
-        {
-            using (var image = SKImage.FromBitmap(bitmap))
-            using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
-            using (var stream = File.OpenWrite(outputPath))
-            {
-                data.SaveTo(stream);
-            }
+            // 完了メッセージを表示
+            PrintCompletionMessage(_config.OutputFileName);
         }
 
         /// <summary>
         /// 完了メッセージを表示する
         /// </summary>
+        /// <param name="outputPath">出力ファイルパス</param>
         private void PrintCompletionMessage(string outputPath)
         {
             Console.WriteLine("========================================");
             Console.WriteLine($"生成完了: {Path.GetFullPath(outputPath)}");
-            Console.WriteLine("脆弱性のない最新のセキュアな画像が生成されました。");
+            Console.WriteLine("脆弱性のない最新のセキュアなPDFが生成されました。");
             Console.WriteLine("========================================");
         }
 
+        /// <summary>
+        /// リソースを解放する
+        /// </summary>
         public void Dispose()
         {
+            // フォントプロバイダーのリソースを解放
             _fontProvider?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// QuestPDF用のドキュメントクラス
+    /// </summary>
+    public class TextDrawingDocument : IDocument
+    {
+        private readonly Configuration _config;
+        private readonly List<TextDrawingConfig> _textConfigs;
+
+        public TextDrawingDocument(Configuration config, List<TextDrawingConfig> textConfigs)
+        {
+            _config = config;
+            _textConfigs = textConfigs;
+        }
+
+        public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+
+        public void Compose(IDocumentContainer container)
+        {
+            container
+                .Page(page =>
+                {
+                    // 1ページ目：テキスト描画ページ
+                    page.Size(PageSizes.A4);
+                    page.Margin(0);
+                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily(Fonts.Calibri));
+                    
+                    page.Content().Element(content =>
+                    {
+                        content
+                            .Background(Colors.White)
+                            .Canvas((canvas, size) =>
+                            {
+                                if (canvas is SkiaSharp.SKCanvas skCanvas)
+                                {
+                                    // 各テキスト設定を描画
+                                    using (var paint = new SkiaSharp.SKPaint())
+                                    {
+                                        paint.Color = SkiaSharp.SKColors.Black;
+                                        paint.IsAntialias = true;
+                                        
+                                        using (var typeface = SkiaSharp.SKTypeface.FromFamilyName("Arial", SkiaSharp.SKFontStyle.Bold))
+                                        {
+                                            foreach (var config in _textConfigs)
+                                            {
+                                                using (var font = new SkiaSharp.SKFont(typeface, config.FontSize))
+                                                {
+                                                    skCanvas.Save();
+                                                    skCanvas.Translate(config.X, _config.ImageHeight - config.Y);
+                                                    skCanvas.RotateDegrees(config.Rotation);
+                                                    skCanvas.DrawText(config.Text, 0, 0, SkiaSharp.SKTextAlign.Left, font, paint);
+                                                    skCanvas.Restore();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                    });
+                })
+                .Page(page =>
+                {
+                    // 2ページ目：説明ページ
+                    page.Size(PageSizes.A4);
+                    page.Margin(50);
+                    page.DefaultTextStyle(x => x.FontSize(12).FontFamily(Fonts.Calibri));
+                    
+                    page.Header().Element(header =>
+                    {
+                        header.Row(row =>
+                        {
+                            row.RelativeItem().Text("テキスト描画設定説明").Bold().FontSize(24);
+                        });
+                    });
+
+                    page.Content().Element(content =>
+                    {
+                        content.Column(column =>
+                        {
+                            column.Spacing(20);
+                            
+                            // 説明文
+                            column.Item().Text("このPDFは以下の設定ファイルに基づいて生成されました。");
+                            column.Item().Text($"設定ファイル: {_config.TextDrawingConfigFile}");
+                            
+                            column.Item().Text("設定ファイルのフォーマット（CSV形式）:").Bold();
+                            column.Item().Text("位置X,位置Y,文字サイズ,傾き（度）,テキスト");
+                            
+                            column.Item().Text("描画されたテキスト一覧:").Bold();
+                            
+                            // 各設定の詳細
+                            foreach (var config in _textConfigs)
+                            {
+                                column.Item().Text($"テキスト: {config.Text}, 位置: ({config.X}, {config.Y}), " +
+                                                 $"サイズ: {config.FontSize}, 傾き: {config.Rotation}°");
+                            }
+                        });
+                    });
+                    
+                    page.Footer()
+                        .AlignCenter()
+                        .Text(x =>
+                        {
+                            x.Span("ページ ");
+                            x.CurrentPageNumber();
+                        });
+                });
         }
     }
 }

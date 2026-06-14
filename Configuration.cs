@@ -8,6 +8,10 @@ namespace NumberDetectGenSampleDoc
     /// </summary>
     public class Configuration
     {
+        // ========================================
+        // 画像サイズと出力設定
+        // ========================================
+
         /// <summary>
         /// 画像の幅（A4サイズ @ 300 DPI）
         /// </summary>
@@ -19,9 +23,13 @@ namespace NumberDetectGenSampleDoc
         public int ImageHeight { get; set; } = 3508;
 
         /// <summary>
-        /// 出力ファイル名
+        /// 出力ファイル名（PDF形式）
         /// </summary>
-        public string OutputFileName { get; set; } = "sample_300dpi.png";
+        public string OutputFileName { get; set; } = "sample_300dpi.pdf";
+
+        // ========================================
+        // テキスト描画設定
+        // ========================================
 
         /// <summary>
         /// フォントサイズ
@@ -43,8 +51,12 @@ namespace NumberDetectGenSampleDoc
         /// </summary>
         public float MaxRotationDegree { get; set; } = 25;
 
+        // ========================================
+        // テストデータ設定
+        // ========================================
+
         /// <summary>
-        /// テスト用の数字リスト
+        /// テスト用の数字リスト（1桁、2桁、3桁を含む）
         /// </summary>
         public List<string> TestNumbers { get; set; } = new List<string>
         {
@@ -54,7 +66,7 @@ namespace NumberDetectGenSampleDoc
         };
 
         /// <summary>
-        /// テキストの配置位置リスト
+        /// テキストの配置位置リスト（重なりを防ぐための座標）
         /// </summary>
         public List<SKPoint> TextPositions { get; set; } = new List<SKPoint>
         {
@@ -68,8 +80,12 @@ namespace NumberDetectGenSampleDoc
             new SKPoint(900, 900)
         };
 
+        // ========================================
+        // フォント設定
+        // ========================================
+
         /// <summary>
-        /// フォントパスの優先順位リスト
+        /// フォントパスの優先順位リスト（上から順に検索）
         /// </summary>
         public List<string> FontPaths { get; set; } = new List<string>
         {
@@ -78,8 +94,17 @@ namespace NumberDetectGenSampleDoc
         };
 
         /// <summary>
-        /// デフォルトフォント名（フォールバック用）
+        /// デフォルトフォント名（フォールバック用：システムフォントが見つからない場合に使用）
         /// </summary>
         public string DefaultFontName { get; set; } = "sans-serif";
+
+        // ========================================
+        // 設定ファイル
+        // ========================================
+
+        /// <summary>
+        /// テキスト描画設定ファイルのパス（CSV形式：位置X,位置Y,文字サイズ,傾き,テキスト）
+        /// </summary>
+        public string TextDrawingConfigFile { get; set; } = "text_drawing_config.csv";
     }
 }

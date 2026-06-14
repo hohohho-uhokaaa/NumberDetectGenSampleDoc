@@ -1,0 +1,15 @@
+  復元対象のプロジェクトを決定しています...
+/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/NumberDetectGenSampleDoc.csproj : warning NU1603: NumberDetectGenSampleDoc は QuestPDF (>= 2024.11.1) によって異なりますが、QuestPDF 2024.11.1 が見つかりませんでした。代わりに QuestPDF 2024.12.0 が解決されました。
+  復元対象のすべてのプロジェクトは最新です。
+/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/NumberDetectGenSampleDoc.csproj : warning NU1603: NumberDetectGenSampleDoc は QuestPDF (>= 2024.11.1) によって異なりますが、QuestPDF 2024.11.1 が見つかりませんでした。代わりに QuestPDF 2024.12.0 が解決されました。
+/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/ImageGenerator.cs(107,44): error CS1593: デリゲート 'ElementExtensions.DrawOnCanvas' には引数 1 を指定できません [/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/NumberDetectGenSampleDoc.csproj]
+
+ビルドに失敗しました。
+
+/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/NumberDetectGenSampleDoc.csproj : warning NU1603: NumberDetectGenSampleDoc は QuestPDF (>= 2024.11.1) によって異なりますが、QuestPDF 2024.11.1 が見つかりませんでした。代わりに QuestPDF 2024.12.0 が解決されました。
+/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/NumberDetectGenSampleDoc.csproj : warning NU1603: NumberDetectGenSampleDoc は QuestPDF (>= 2024.11.1) によって異なりますが、QuestPDF 2024.11.1 が見つかりませんでした。代わりに QuestPDF 2024.12.0 が解決されました。
+/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/ImageGenerator.cs(107,44): error CS1593: デリゲート 'ElementExtensions.DrawOnCanvas' には引数 1 を指定できません [/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/NumberDetectGenSampleDoc.csproj]
+    2 個の警告
+    1 エラー
+
+経過時間 00:00:01.99

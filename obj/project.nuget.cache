@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "oWPD6/UTTuI=",
+  "dgSpecHash": "YURLErn+hOg=",
   "success": true,
   "projectFilePath": "/home/tomjerry/Projects/Sources/dotnet/cs/NumberDetectGenSampleDoc/NumberDetectGenSampleDoc.csproj",
   "expectedPackageFiles": [
     "/home/tomjerry/.nuget/packages/microsoft.win32.systemevents/9.0.0/microsoft.win32.systemevents.9.0.0.nupkg.sha512",
+    "/home/tomjerry/.nuget/packages/questpdf/2024.12.0/questpdf.2024.12.0.nupkg.sha512",
     "/home/tomjerry/.nuget/packages/skiasharp/3.119.4/skiasharp.3.119.4.nupkg.sha512",
     "/home/tomjerry/.nuget/packages/skiasharp.nativeassets.linux.nodependencies/3.119.4/skiasharp.nativeassets.linux.nodependencies.3.119.4.nupkg.sha512",
     "/home/tomjerry/.nuget/packages/skiasharp.nativeassets.macos/3.119.4/skiasharp.nativeassets.macos.3.119.4.nupkg.sha512",
