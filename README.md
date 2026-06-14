@@ -179,7 +179,7 @@ sudo dnf install google-noto-sans-fonts google-noto-sans-cjk-fonts
 
 ### 4. 本質的な自動化へ向けた次のフェーズ（Devinへの指示例）
 
-本プロジェクトで生成したテスト用PDFの精度検証が完了した後、実際の「複数ページに一括スキャンされたPDFから、所定位置の数字を読み取って自動リネーム・分割する本番用パイプライン」の構築をDevinへ指示する際のプロンプトの例です。 （geminiより提案）　併せて本来、devinを使用する際はこの例のように実行指示を最初にまとめて投入するの使い方が正統派の使い方であると。
+本プロジェクトで生成したテスト用PDFの精度検証が完了した後、実際の「複数ページに一括スキャンされたPDFから、所定位置の数字を読み取って自動リネーム・分割する本番用パイプライン」の構築をDevinへ指示する際のプロンプトの例です。 （geminiより提案）　併せて本来、devinを使用する際はこの例のように実行指示を最初にまとめて投入する使い方が正統派の使い方であると。
 
 ```
 We are going to build a production tool to automate a miserable paperwork task.
