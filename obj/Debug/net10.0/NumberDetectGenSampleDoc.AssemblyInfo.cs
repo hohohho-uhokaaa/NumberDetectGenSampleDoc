@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NumberDetectGenSampleDoc")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1bfffa4402828c07b308f42571d0db80a065e3bb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c6b2e273fd2e1f608b19b8409eadd798c21f9e0")]
 [assembly: System.Reflection.AssemblyProductAttribute("NumberDetectGenSampleDoc")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NumberDetectGenSampleDoc")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
